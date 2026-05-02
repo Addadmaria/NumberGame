@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NumberGame – Connexion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="auth-page">
+
+<div class="auth-bg">
+    <div class="floating-nums" aria-hidden="true">
+        <span>42</span><span>7</span><span>99</span><span>13</span>
+        <span>56</span><span>1</span><span>88</span><span>34</span>
+    </div>
+</div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="logo-icon">🔢</span>
+            <h1 class="logo-title">NumberGame</h1>
+            <p class="logo-sub">Jeu de Réflexion</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span>⚠️</span> <span th:text="${error}"></span>
+        </div>
+        <div th:if="${logout}" class="alert alert-info">
+            <span>👋</span> <span th:text="${logout}"></span>
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success">
+            <span>✅</span> Compte créé ! Connectez-vous.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username"
+                       placeholder="Entrez votre pseudo" required autocomplete="username"/>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password"
+                       placeholder="••••••••" required autocomplete="current-password"/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                🎮 Se connecter
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Pas encore de compte ?
+                <a th:href="@{/register}" class="link">S'inscrire</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

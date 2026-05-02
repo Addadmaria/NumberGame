@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NumberGame – En jeu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="main-page">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{/accueil}" class="nav-back">← Accueil</a>
+    </div>
+    <div class="nav-center">
+        <span class="nav-level-badge"
+              th:classappend="${jeu.niveau == 1} ? ' badge-easy' : (${jeu.niveau == 2} ? ' badge-medium' : ' badge-hard')"
+              th:text="${jeu.niveauLabel}">Moyen</span>
+    </div>
+    <div class="nav-user">
+        <span class="nav-username" th:text="${joueur.username}">Joueur</span>
+    </div>
+</nav>
+
+<!-- GAME AREA -->
+<div class="game-wrapper">
+
+    <!-- INFO BAR -->
+    <div class="game-info-bar">
+        <div class="info-chip">
+            <span class="chip-label">Plage de recherche</span>
+            <span class="chip-val" th:text="${jeu.rangeMin} + ' – ' + ${jeu.rangeMax}">1–100</span>
+        </div>
+        <div class="info-chip"
+             th:classappend="${jeu.essaisRestants <= 2} ? ' danger' : ''">
+            <span class="chip-label">Essais restants</span>
+            <span class="chip-val"
+                  th:text="${jeu.essaisRestants} + ' / ' + ${jeu.essaisMax}">10/10</span>
+        </div>
+        <div class="info-chip">
+            <span class="chip-label">Niveau</span>
+            <span class="chip-val" th:text="${jeu.niveauLabel}">Moyen</span>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-wrap">
+        <div class="progress-bar">
+            <div class="progress-fill"
+                 th:style="'width:' + ${jeu.pourcentageProgression} + '%'"></div>
+        </div>
+    </div>
+
+    <!-- MESSAGE PRINCIPAL -->
+    <div th:if="${message}" class="game-message"
+         th:classappend="${jeu.gagnee} ? ' msg-win' : (${jeu.fin and !jeu.gagnee} ? ' msg-lose' : ' msg-hint')">
+        <span th:text="${message}">Message</span>
+    </div>
+
+    <!-- IMAGE SELON ÉTAT -->
+    <div class="game-visual">
+        <img th:if="${!jeu.fin}"
+             src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f914.png"
+             alt="Réfléchissez" class="game-emoji"/>
+        <img th:if="${jeu.fin and jeu.gagnee}"
+             src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3c6.png"
+             alt="Gagné !" class="game-emoji game-emoji-big"/>
+        <img th:if="${jeu.fin and !jeu.gagnee}"
+             src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f4a5.png"
+             alt="Perdu" class="game-emoji game-emoji-big"/>
+    </div>
+
+    <!-- FORMULAIRE DE JEU (si pas terminé) -->
+    <div th:if="${!jeu.fin}" class="game-form-wrap">
+        <form th:action="@{/jeu/jouer}" method="post" class="game-form">
+            <div class="input-row">
+                <input type="number"
+                       name="nombre"
+                       id="nombreInput"
+                       th:min="${jeu.rangeMin}"
+                       th:max="${jeu.rangeMax}"
+                       th:placeholder="'Entrez un nombre entre ' + ${jeu.rangeMin} + ' et ' + ${jeu.rangeMax}"
+                       class="game-input"
+                       required autofocus/>
+                <button type="submit" class="btn btn-primary btn-guess">
+                    🎯 Deviner
+                </button>
+            </div>
+        </form>
+
+        <form th:action="@{/jeu/sauvegarder}" method="post" class="save-form">
+            <button type="submit" class="btn btn-outline btn-save">
+                💾 Sauvegarder la partie
+            </button>
+        </form>
+    </div>
+
+    <!-- FIN DE JEU -->
+    <div th:if="${jeu.fin}" class="endgame-wrap">
+        <div th:if="${jeu.gagnee}" class="endgame-win">
+            <h2>🎉 Félicitations !</h2>
+            <p>Vous avez trouvé le nombre en
+                <strong th:text="${jeu.essaisUtilises}">0</strong> essai(s) !
+            </p>
+            <div class="score-display">
+                <span class="score-label">Score obtenu</span>
+                <span class="score-number" th:text="${jeu.calculerScore()}">0</span>
+                <span class="score-pts">pts</span>
+            </div>
+        </div>
+        <div th:if="${!jeu.gagnee}" class="endgame-lose">
+            <h2>💀 Dommage !</h2>
+            <p>Le nombre secret était <strong th:text="${jeu.nombreSecret}">?</strong></p>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+                Analysez vos essais et réessayez avec une meilleure stratégie de dichotomie !
+            </p>
+        </div>
+        <div class="endgame-actions">
+            <a th:href="@{/jeu/nouveau/{n}(n=${jeu.niveau})}" class="btn btn-primary">🔄 Rejouer même niveau</a>
+            <a th:href="@{/accueil}" class="btn btn-outline">🏠 Accueil</a>
+        </div>
+    </div>
+
+    <!-- HISTORIQUE DES ESSAIS -->
+    <div th:if="${!#lists.isEmpty(jeu.historique)}" class="historique-wrap">
+        <h4 class="hist-title">📋 Vos essais — analysez les indices !</h4>
+        <div class="hist-list">
+            <div th:each="h, stat : ${jeu.historique}" class="hist-item"
+                 th:classappend="${stat.last} ? ' hist-last' : ''">
+                <span class="hist-num" th:text="${stat.index + 1}">1</span>
+                <span class="hist-msg" th:text="${h}">message</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('nombreInput');
+        if (input) input.focus();
+    });
+</script>
+
+</body>
+</html>

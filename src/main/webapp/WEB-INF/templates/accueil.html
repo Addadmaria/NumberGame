@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NumberGame – Accueil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="main-page">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">🔢 NumberGame</div>
+    <div class="nav-user">
+        <span class="nav-score">🏆 <span th:text="${joueur.scoreTotal}">0</span> pts</span>
+        <span class="nav-username" th:text="${joueur.username}">Joueur</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button type="submit" class="btn btn-sm btn-outline">Déconnexion</button>
+        </form>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <h2 class="hero-title">
+        Bonjour, <span th:text="${joueur.username}" class="accent">Joueur</span> !
+    </h2>
+    <p class="hero-sub">
+        Déduisez le nombre mystère grâce aux indices. Chaque essai compte !
+    </p>
+    <div class="stats-row">
+        <div class="stat-badge">
+            <span class="stat-val" th:text="${joueur.partiesJouees}">0</span>
+            <span class="stat-lbl">Parties jouées</span>
+        </div>
+        <div class="stat-badge">
+            <span class="stat-val" th:text="${joueur.partiesGagnees}">0</span>
+            <span class="stat-lbl">Victoires</span>
+        </div>
+        <div class="stat-badge">
+            <span class="stat-val" th:text="${joueur.scoreTotal}">0</span>
+            <span class="stat-lbl">Score total</span>
+        </div>
+    </div>
+</div>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="section">
+    <div class="how-to-play">
+        <h3 class="section-title">🧠 Comment jouer ?</h3>
+        <div class="steps-row">
+            <div class="step-card">
+                <span class="step-icon">🎯</span>
+                <p>Un nombre secret est tiré aléatoirement dans une plage selon le niveau</p>
+            </div>
+            <div class="step-card">
+                <span class="step-icon">🔍</span>
+                <p>Proposez un nombre — le jeu vous dit si c'est <strong>trop grand</strong> ou <strong>trop petit</strong></p>
+            </div>
+            <div class="step-card">
+                <span class="step-icon">⚡</span>
+                <p>Utilisez la <strong>dichotomie</strong> (diviser par 2) pour trouver en un minimum d'essais !</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CHOISIR NIVEAU -->
+<section class="section">
+    <h3 class="section-title">🎮 Nouvelle Partie</h3>
+    <div class="levels-grid">
+
+        <div class="level-card level-easy">
+            <div class="level-img-wrap">
+                <img src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f7e2.png"
+                     alt="Facile" class="level-img"/>
+            </div>
+            <div class="level-info">
+                <h4>Facile</h4>
+                <p>Nombre entre <strong>1 – 50</strong></p>
+                <p><strong>15 essais</strong> maximum</p>
+                <p class="score-hint">Score max : <strong>250 pts</strong></p>
+            </div>
+            <a th:href="@{/jeu/nouveau/1}" class="btn btn-easy">Jouer</a>
+        </div>
+
+        <div class="level-card level-medium">
+            <div class="level-img-wrap">
+                <img src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f7e1.png"
+                     alt="Moyen" class="level-img"/>
+            </div>
+            <div class="level-info">
+                <h4>Moyen</h4>
+                <p>Nombre entre <strong>1 – 100</strong></p>
+                <p><strong>10 essais</strong> maximum</p>
+                <p class="score-hint">Score max : <strong>350 pts</strong></p>
+            </div>
+            <a th:href="@{/jeu/nouveau/2}" class="btn btn-medium">Jouer</a>
+        </div>
+
+        <div class="level-card level-hard">
+            <div class="level-img-wrap">
+                <img src="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f534.png"
+                     alt="Difficile" class="level-img"/>
+            </div>
+            <div class="level-info">
+                <h4>Difficile</h4>
+                <p>Nombre entre <strong>1 – 200</strong></p>
+                <p><strong>7 essais</strong> maximum</p>
+                <p class="score-hint">Score max : <strong>570 pts</strong></p>
+            </div>
+            <a th:href="@{/jeu/nouveau/3}" class="btn btn-hard">Jouer</a>
+        </div>
+
+    </div>
+</section>
+
+<!-- PARTIES EN COURS -->
+<section class="section" th:if="${not #lists.isEmpty(partiesEnCours)}">
+    <h3 class="section-title">⏸️ Parties Sauvegardées</h3>
+    <div class="saved-list">
+        <div th:each="p : ${partiesEnCours}" class="saved-card">
+            <div class="saved-info">
+                <span class="saved-level"
+                      th:classappend="${p.niveau == 1} ? ' badge-easy' : (${p.niveau == 2} ? ' badge-medium' : ' badge-hard')"
+                      th:text="${p.niveauLabel}">Moyen</span>
+                <span class="saved-essais">
+                    Essai(s) : <strong th:text="${p.essaisUtilises}">0</strong>
+                    / <span th:text="${p.essaisMax}">10</span>
+                </span>
+                <span class="saved-date"
+                      th:text="${#temporals.format(p.dateSauvegarde, 'dd/MM HH:mm')}">date</span>
+            </div>
+            <a th:href="@{/jeu/reprendre/{id}(id=${p.id})}" class="btn btn-sm btn-primary">
+                ▶ Reprendre
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CLASSEMENT -->
+<section class="section">
+    <h3 class="section-title">🏆 Classement des joueurs</h3>
+    <div class="leaderboard">
+        <div th:each="j, stat : ${classement}" class="lb-row"
+             th:classappend="${j.username == joueur.username} ? ' lb-me' : ''">
+            <span class="lb-rank">
+                <span th:if="${stat.index == 0}">🥇</span>
+                <span th:if="${stat.index == 1}">🥈</span>
+                <span th:if="${stat.index == 2}">🥉</span>
+                <span th:if="${stat.index >= 3}" th:text="${stat.index + 1}">4</span>
+            </span>
+            <span class="lb-name" th:text="${j.username}">Joueur</span>
+            <span class="lb-score" th:text="${j.scoreTotal} + ' pts'">0 pts</span>
+            <span class="lb-wins" th:text="${j.partiesGagnees} + ' 🏅'">0 🏅</span>
+        </div>
+        <div th:if="${#lists.isEmpty(classement)}" class="lb-empty">
+            Personne n'a encore joué. Soyez le premier ! 🚀
+        </div>
+    </div>
+    <div class="section-footer">
+        <a th:href="@{/jeu/historique}" class="btn btn-outline">📜 Mon historique complet</a>
+    </div>
+</section>
+
+</body>
+</html>

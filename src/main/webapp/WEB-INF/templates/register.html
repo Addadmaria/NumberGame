@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NumberGame – Inscription</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="auth-page">
+
+<div class="auth-bg">
+    <div class="floating-nums" aria-hidden="true">
+        <span>42</span><span>7</span><span>99</span><span>13</span>
+        <span>56</span><span>1</span><span>88</span><span>34</span>
+    </div>
+</div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="logo-icon">🔢</span>
+            <h1 class="logo-title">NumberGame</h1>
+            <p class="logo-sub">Créer un compte</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span>⚠️</span> <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username"
+                       placeholder="Choisissez un pseudo (min. 3 car.)" required minlength="3"/>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Minimum 4 caractères" required minlength="4"/>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe</label>
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                       placeholder="Répétez le mot de passe" required minlength="4"/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                ✨ Créer mon compte
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Déjà inscrit ?
+                <a th:href="@{/login}" class="link">Se connecter</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
