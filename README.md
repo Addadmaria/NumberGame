@@ -1,4 +1,4 @@
-# NumberGame — Spring MVC Pur (sans Spring Boot)
+# NumberGame
 
 ## Architecture du projet
 
@@ -46,7 +46,7 @@ NumberGame_SpringMVC/
 
 ## Différence Spring Boot vs Spring MVC Pur
 
-| | Spring Boot (interdit) | Spring MVC Pur ✅ |
+
 |---|---|---|
 | Packaging | JAR auto-exécutable | WAR → déployé sur Tomcat |
 | Démarrage | `main()` avec `SpringApplication.run()` | Tomcat lit `WebAppInitializer` |
